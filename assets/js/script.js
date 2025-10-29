@@ -1,0 +1,1 @@
+console.log("pProject scripts has been built up successfully.");
