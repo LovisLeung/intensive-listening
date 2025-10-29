@@ -1,35 +1,79 @@
+// Wait for the entire HTML document to be loaded before running the script
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Get all HTML elements waiting for being manipulated
+
+    // --- 1. Get all necessary DOM elements ---
+    // Sections
+    const originalTextSection = document.getElementById('originalTextSection');
+    const dictationSection = document.getElementById('dictationSection');
+    const resultSection = document.getElementById('resultSection');
+
+    // Textareas
     const originalTextarea = document.getElementById('originalText');
     const dictatedTextarea = document.getElementById('dictatedText');
+
+    // Buttons and Toggles
+    const submitOriginalBtn = document.getElementById('submitOriginalBtn');
     const compareButton = document.getElementById('compareBtn');
+    const showOriginalToggle = document.getElementById('showOriginalToggle');
+
+    // Result Display
     const resultDisplay = document.getElementById('resultDisplay');
 
-    // 2. Add event listener for "Compare" button
-    compareButton.addEventListener('click', () => {
-        const originalText = originalTextarea.value.trim();
-        const dictatedText = dictatedTextarea.value.trim();
+    // --- 2. State Management ---
+    // This variable will store the original text after the user submits it
+    let storedOriginalText = '';
 
-        // Simple verification, preventing user from submit blank content.
-        if (!originalText || !dictatedText) {
-            resultDisplay.innerHTML = '<p style="color: red;">Please input original text or your dictation.</p>';
+    // --- 3. Event Listeners ---
+
+    // Listen for clicks on the "Submit Original" button
+    submitOriginalBtn.addEventListener('click', () => {
+        const originalText = originalTextarea.value.trim();
+        if (!originalText) {
+            alert('Please enter the original text!');
             return;
         }
 
-        // 3. Use jsdiff library to compare texts
-        // Diff.diffWords will return a object array with difference informations.
-        const diff = Diff.diffWords(originalText, dictatedText);
+        // Store the text in our variable
+        storedOriginalText = originalText;
 
-        // Create a document fragment to build up result efficiently, avoiding manipulate DOM too often.
+        // Switch the UI: hide the original section, show the dictation section
+        originalTextSection.classList.add('hidden');
+        dictationSection.classList.remove('hidden');
+
+        // Ensure the result section is hidden if the user is starting a new comparison
+        resultSection.classList.add('hidden');
+    });
+
+    // Listen for clicks on the "Show/Hide Original Text" link
+    showOriginalToggle.addEventListener('click', () => {
+        // The 'toggle' method adds the class if it's not there, and removes it if it is.
+        originalTextSection.classList.toggle('hidden');
+
+        // Improve user experience by changing the link text based on the state
+        if (originalTextSection.classList.contains('hidden')) {
+            showOriginalToggle.textContent = 'Show Original Text';
+        } else {
+            showOriginalToggle.textContent = 'Hide Original Text';
+        }
+    });
+
+    // Listen for clicks on the "Compare Texts" button
+    compareButton.addEventListener('click', () => {
+        const dictatedText = dictatedTextarea.value.trim();
+
+        if (!dictatedText) {
+            alert('Please enter your dictated text!');
+            return;
+        }
+
+        // Use the stored original text for comparison
+        const diff = Diff.diffWords(storedOriginalText, dictatedText);
+
         const fragment = document.createDocumentFragment();
-
-        // 4. Iterating diff array, creating HTML with highlight tags.
         diff.forEach((part) => {
             const span = document.createElement('span');
-            // part.added: extra parts
-            // part.removed: miss parts or wrong parts
             if (part.added) {
-                span.className = 'error'; // Apply the "error" style defined in css.
+                span.className = 'error';
                 span.textContent = `[→ ${part.value}]`;
             } else if (part.removed) {
                 span.className = 'error';
@@ -40,14 +84,18 @@ document.addEventListener('DOMContentLoaded', () => {
             fragment.appendChild(span);
         });
 
-        // 5. display result
-        resultDisplay.innerHTML = ''; // remove previous contents
+        // Display the results on the page
+        resultDisplay.innerHTML = ''; // Clear previous results
         resultDisplay.appendChild(fragment);
 
-        // Optimize：Modify from "[A →] [→ B]" to "[A → B]"
+        // Optimization: Combine adjacent removal/addition into a single "replacement" for better readability
+        // e.g., "[wordA →] [→ wordB]" becomes "[wordA → wordB]"
         resultDisplay.innerHTML = resultDisplay.innerHTML.replace(
             /<span class="error">\[(.*?)\s→\]<\/span><span class="error">\[→\s(.*?)]<\/span>/g,
             '<span class="error">[$1 → $2]</span>'
         );
+
+        // Show the result section
+        resultSection.classList.remove('hidden');
     });
 });

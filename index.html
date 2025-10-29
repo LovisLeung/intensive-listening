@@ -1,43 +1,48 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Intensive Listening</title>
+    <title>Intensive Listening Practice Tool</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jsdiff/5.1.0/diff.min.js"></script>
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 
 <body>
     <div class="container">
-        <h1>Intensive Listening</h1>
-        <p>Submit original English text and dictation here, and I will automatically compare and highlight
-            mistakes.</p>
+        <h1>Intensive Listening Tool</h1>
 
-        <div class="input-section">
+        <div id="originalTextSection">
+            <p>Step 1: Submit the original text. It will be hidden automatically.</p>
             <div class="input-group">
                 <label for="originalText">Original Text:</label>
-                <textarea id="originalText" placeholder="Input the original text here..."></textarea>
+                <textarea id="originalText" placeholder="Paste the original text here..."></textarea>
             </div>
-            <div class="input-group">
-                <label for="dictatedText">My Dictation:</label>
-                <textarea id="dictatedText" placeholder="Input your dictation here..."></textarea>
-            </div>
+            <button id="submitOriginalBtn">Submit Original & Start Dictation</button>
         </div>
 
-        <button id="compareBtn">Compare</button>
+        <div id="dictationSection" class="hidden">
+            <p>Step 2: Based on the audio, enter your dictation below.</p>
+            <div class="input-group">
+                <label for="dictatedText">My Dictation:</label>
+                <textarea id="dictatedText" placeholder="Enter your dictated text here..."></textarea>
+            </div>
 
-        <div class="result-section">
-            <h2>Compare Result:</h2>
+            <button id="compareBtn">Compare Texts</button>
+
+            <a id="showOriginalToggle" class="toggle-link">Show Original Text</a>
+        </div>
+
+        <div id="resultSection" class="result-section hidden">
+            <h2>Comparison Result:</h2>
             <div id="resultDisplay" class="result-box">
-                <p>Waiting for the result...</p>
+                <p>Awaiting comparison...</p>
             </div>
             <p class="explanation">
-                Note: <span class="error-legend">[Correct → Mistake]</span> shows where you made a mistake, <span
-                    class="error-legend">[Correct → ]</span>
-                shows where you missed a word, <span class="error-legend">[→ Mistake]</span> shows where you wrote an
-                extra word.
+                Legend: <span class="error-legend">[Correct → Yours]</span> indicates a mistake, <span
+                    class="error-legend">[Correct →]</span> indicates an omission, <span class="error-legend">[→
+                    Yours]</span> indicates an addition.
             </p>
         </div>
     </div>
