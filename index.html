@@ -24,14 +24,24 @@
 
         <div id="dictationSection" class="hidden">
             <p>Step 2: Based on the audio, enter your dictation below.</p>
-            <div class="input-group">
-                <label for="dictatedText">My Dictation:</label>
-                <textarea id="dictatedText" placeholder="Enter your dictated text here..."></textarea>
+
+            <div id="dictationContainer">
+                <div class="input-group">
+                    <label for="dictatedText">My Dictation:</label>
+                    <textarea id="dictatedText"
+                        placeholder="Enter your dictated text here... Use '_' (underscores) for words you miss."></textarea>
+                </div>
             </div>
 
-            <button id="compareBtn">Compare Texts</button>
+            <div class="button-group">
+                <button id="nextPassBtn">Next Pass</button>
+                <button id="compareBtn">Compare Texts</button>
+            </div>
 
-            <a id="showOriginalToggle" class="toggle-link">Show Original Text</a>
+            <div class="link-group">
+                <a id="editModeToggle" class="toggle-link hidden">Switch to Full Edit Mode</a>
+                <a id="showOriginalToggle" class="toggle-link">Show Original Text</a>
+            </div>
         </div>
 
         <div id="resultSection" class="result-section hidden">
